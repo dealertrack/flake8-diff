@@ -2,7 +2,7 @@
 
 ### Development Lead
 
-* Gregory Armer <Gregory.Armer@dealertrack.com>
+* Gregory Armer - gregory.armer@dealertrack.com
 
 ### Contributors
 
