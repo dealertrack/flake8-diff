@@ -17,7 +17,7 @@ setup(
     install_requires = ['flake8'],
     entry_points = {
         'console_scripts': [
-            'flake8-diff = flake8diff.main:process'
+            'flake8-diff = flake8diff:main'
         ]
     },
     dependency_links = []

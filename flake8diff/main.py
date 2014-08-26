@@ -13,14 +13,18 @@ $ git merge origin/master
 $ flake8-diff
 
 """
-import subprocess
-import argparse
+from __future__ import unicode_literals, print_function
 import logging
-import shutil
-import sys
-import os
 import re
+import subprocess
+from blessings import Terminal
 
+from .exceptions import NotLocatableVCSError, UnsupportedVCSError
+from .utils import _execute
+from .vcs import SUPPORTED_VCS
+
+
+terminal = Terminal()
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -30,86 +34,99 @@ logger.setLevel(logging.ERROR)
 
 
 # TODO: Handle these not being found in a better way
-GIT = subprocess.check_output(["which", "git"]).strip()
 FLAKE8 = subprocess.check_output(["which", "flake8"]).strip()
 
 
 # Regexes
-IS_PYTHON = re.compile(r'.*[.]py$')
-LINE = re.compile(r'^([^\s]+):([\d]+):[\d]+: ')
+FLAKE8_LINE = re.compile(
+    r'^(?P<filename>[^\s]+)'
+    r':'
+    r'(?P<line_number>[\d]+)'
+    r':'
+    r'(?P<char_number>[\d]+)'
+    r': '
+    r'(?P<error_code>[\w\d]*) '
+    r'(?P<description>.*)',
+)
 
 
-def _execute(cmd):
-    """ Make executing a command locally a little less painful.
+class Flake8Diff(object):
     """
-    logging.debug("executing {}".format(cmd))
-    process = subprocess.Popen(cmd.split(' '),
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    out, err = process.communicate()
-    returncode = proc.wait()
-    if returncode != 0:
-        logging.error(err)
-    return out
-
-
-def changed_lines(filename):
-    """ Get a list of all lines changed by this set of commits.
-
-    TODO: Support other SCMs
+    Main class implementing flake8-diff functionality
     """
-    diff_command = ['diff',
-                    '--new-line-format="%dn "',
-                    '--unchanged-line-format=""',
-                    '--changed-group-format="%>"']
-    difftool_command = ['difftool', '-y', '-x',
-                        " ".join(diff_command)]
 
-    cmd = [GIT] + difftool_command + ["origin/master", "--", filename]
-    return _execute(cmd).split()
+    def __init__(self, commits, options=None):
+        self.commits = commits
+        self.options = options
 
+    def get_vcs(self):
+        """
+        Get appropriate VCS engine
+        """
+        if self.options.get('vcs'):
+            vcs = self.options.get('vcs')
+            if vcs not in SUPPORTED_VCS:
+                raise UnsupportedVCSError(vcs)
+            return SUPPORTED_VCS.get(vcs)(self.commits, self.options, logger)
 
-def changed_files():
-    """ Return a list of all changed files.
+        for vcs in SUPPORTED_VCS.values():
+            vcs = vcs(self.commits, self.options, logger)
+            if vcs.is_used():
+                return vcs
 
-    TODO: Support other SCMs
-    """
-    command = "{} diff --name-only origin/master".format(GIT)
-    for filename in _execute(command).splitlines():
-        if IS_PYTHON.match(filename):
-            yield filename
+        raise NotLocatableVCSError
 
+    def flake8(self, filename):
+        """
+        Run flake8 on a file
+        """
+        command = filter(None, [
+            FLAKE8,
+            self.options.get('flake8_options'),
+            filename,
+        ])
+        return _execute(command, logger)
 
-def flake8(filename):
-    """ Run flake8 on a file.
+    def process(self):
+        """
+        Perform the magic
+        """
+        overall_violations = 0
+        vcs = self.get_vcs()
 
-    TODO: Make excludes configurable.
-    """
-    command = "{} --ignore=E501 {}".format(FLAKE8, filename)
-    return _execute(cmd)
+        if self.options.get('verbose'):
+            logger.setLevel(logging.INFO)
 
+        for filename in vcs.changed_files():
+            violated_lines = vcs.changed_lines(filename)
 
-def process():
-    """ Perform the magic.
-    """
-    parser = argparse.ArgumentParser(description=globals().__docstring__)
+            logger.info("checking {} lines {}".format(
+                filename,
+                ', '.join(violated_lines)),
+            )
 
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='be verbose')
+            violations = []
+            for violation in self.flake8(filename).splitlines():
+                matches = FLAKE8_LINE.match(violation)
+                if matches:
+                    violation_details = matches.groupdict()
+                    if violation_details['line_number'] in violated_lines:
+                        violations.append(violation_details)
+                        if self.options.get('standard_flake8_output'):
+                            print(violation)
 
-    args = parser.parse_args()
+            overall_violations += len(violations)
 
-    if args.verbose:
-        logger.setLevel(logging.INFO)
+            if violations and not self.options.get('standard_flake8_output'):
+                print(terminal.bold('Found errors:'), filename)
 
-    for filename in changed_files():
-        included_lines = changed_lines(filename)
-        logger.info("checking {} lines {}".format(filename,
-                                                  ', '.join(included_lines)))
+                for line in violations:
+                    string = '\t{code} @ {line}:{char} - {description}'.format(
+                        line=terminal.magenta(line['line_number']),
+                        char=terminal.magenta(line['char_number']),
+                        code=terminal.bold_red(line['error_code']),
+                        description=terminal.yellow(line['description']),
+                    )
+                    print(string)
 
-        for violation in flake8(filename).splitlines():
-            matches = LINE.match(violation)
-            if matches:
-                matched_file, matched_line = matches.groups()
-                if matched_line in included_lines:
-                    print violation
+        return overall_violations == 0
