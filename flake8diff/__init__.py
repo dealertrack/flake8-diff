@@ -1,12 +1,15 @@
 from __future__ import unicode_literals, print_function
 import argparse
 import operator
+import os
 import six
 import sys
 
-from .main import Flake8Diff
+from .main import Flake8Diff, COLORS
 from .vcs import SUPPORTED_VCS
 
+
+ENVIRON_PREFIX = 'FLAKE8DIFF_{}'
 
 parser = argparse.ArgumentParser(
     description='This script runs flake8 across a set of changed files '
@@ -40,8 +43,10 @@ parser.add_argument(
     '--vcs',
     choices=map(operator.attrgetter('name'), SUPPORTED_VCS.values()),
     type=six.text_type,
-    help='VCS to use. Can be any of {}'
-         ''.format(', '.join([])),
+    help='VCS to use. By default VCS is attempted to '
+         'determine automatically. Can be any of "{}"'
+         ''.format(', '.join(map(operator.attrgetter('name'),
+                                 SUPPORTED_VCS.values()))),
 )
 parser.add_argument(
     '--standard-flake8-output',
@@ -58,6 +63,17 @@ parser.add_argument(
     help='Be verbose. '
          'This will print out every compared file.',
 )
+default_color = os.environ.get(ENVIRON_PREFIX.format('COLOR'), 'nocolor')
+parser.add_argument(
+    '--color',
+    choices=COLORS.keys(),
+    default=default_color,
+    type=six.text_type,
+    help='Color theme to use. Default is "{}". '
+         'Can be any of "{}"'
+         ''.format(default_color,
+                   ', '.join(COLORS.keys())),
+)
 
 
 def main():
@@ -71,6 +87,7 @@ def main():
         'flake8_options': args.flake8_options,
         'standard_flake8_output': args.standard_flake8_output,
         'verbose': args.verbose,
+        'color_theme': args.color,
     }
 
     any_violations = False

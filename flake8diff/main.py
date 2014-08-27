@@ -25,6 +25,7 @@ from .vcs import SUPPORTED_VCS
 
 
 terminal = Terminal()
+identity = lambda x: x
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -48,6 +49,42 @@ FLAKE8_LINE = re.compile(
     r'(?P<error_code>[\w\d]*) '
     r'(?P<description>.*)',
 )
+
+# Color themes
+COLORS = {
+    'off': dict(
+        header=identity,
+        filename=identity,
+        code=identity,
+        line=identity,
+        char=identity,
+        description=identity,
+    ),
+    'nocolor': dict(
+        header=terminal.bold_underline,
+        filename=terminal.standout,
+        code=terminal.bold,
+        line=identity,
+        char=identity,
+        description=identity,
+    ),
+    'dark': dict(
+        header=terminal.bold,
+        filename=identity,
+        code=terminal.bold_red,
+        line=terminal.magenta,
+        char=terminal.magenta,
+        description=terminal.yellow,
+    ),
+    'light': dict(
+        header=terminal.bold,
+        filename=identity,
+        code=terminal.bold_red,
+        line=terminal.magenta,
+        char=terminal.magenta,
+        description=terminal.blue,
+    ),
+}
 
 
 class Flake8Diff(object):
@@ -118,14 +155,18 @@ class Flake8Diff(object):
             overall_violations += len(violations)
 
             if violations and not self.options.get('standard_flake8_output'):
-                print(terminal.bold('Found errors:'), filename)
+                theme = COLORS.get(self.options.get('color_theme'), {})
+                color = lambda c: theme.get(c, identity)
+
+                print(color('header')('Found errors:'),
+                      color('filename')(filename))
 
                 for line in violations:
                     string = '\t{code} @ {line}:{char} - {description}'.format(
-                        line=terminal.magenta(line['line_number']),
-                        char=terminal.magenta(line['char_number']),
-                        code=terminal.bold_red(line['error_code']),
-                        description=terminal.yellow(line['description']),
+                        line=color('line')(line['line_number']),
+                        char=color('char')(line['char_number']),
+                        code=color('code')(line['error_code']),
+                        description=color('description')(line['description']),
                     )
                     print(string)
 
