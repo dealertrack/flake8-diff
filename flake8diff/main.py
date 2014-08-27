@@ -124,6 +124,27 @@ class Flake8Diff(object):
         ])
         return _execute(command, logger)
 
+    def color_getter(self, component):
+        """
+        Get color formatting function for selected theme via options.
+        If function is not present in the themes,
+        identity function is returned.
+        """
+        theme = COLORS.get(self.options.get('color_theme'), {})
+        return theme.get(component, identity)
+
+    def get_color_kwargs(self, details):
+        """
+        Get string formatting kwargs from violation details
+        """
+        return dict(
+            line=self.color_getter('line')(details['line_number']),
+            char=self.color_getter('char')(details['char_number']),
+            code=self.color_getter('code')(details['error_code']),
+            description=self.color_getter('description')(details['description']),
+            filename=self.color_getter('filename')(details['filename']),
+        )
+
     def process(self):
         """
         Perform the magic
@@ -150,24 +171,21 @@ class Flake8Diff(object):
                     if violation_details['line_number'] in violated_lines:
                         violations.append(violation_details)
                         if self.options.get('standard_flake8_output'):
-                            print(violation)
+                            string = '{filename}:{line}:{char}: {code} {description}'
+                            print(string.format(
+                                **self.get_color_kwargs(violation_details)
+                            ))
 
             overall_violations += len(violations)
 
             if violations and not self.options.get('standard_flake8_output'):
-                theme = COLORS.get(self.options.get('color_theme'), {})
-                color = lambda c: theme.get(c, identity)
-
-                print(color('header')('Found errors:'),
-                      color('filename')(filename))
+                print(self.color_getter('header')('Found errors:'),
+                      self.color_getter('filename')(filename))
 
                 for line in violations:
-                    string = '\t{code} @ {line}:{char} - {description}'.format(
-                        line=color('line')(line['line_number']),
-                        char=color('char')(line['char_number']),
-                        code=color('code')(line['error_code']),
-                        description=color('description')(line['description']),
-                    )
-                    print(string)
+                    string = '\t{code} @ {line}:{char} - {description}'
+                    print(string.format(
+                        **self.get_color_kwargs(line)
+                    ))
 
         return overall_violations == 0
