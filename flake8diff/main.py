@@ -37,6 +37,11 @@ logger.setLevel(logging.ERROR)
 # TODO: Handle these not being found in a better way
 FLAKE8 = subprocess.check_output(["which", "flake8"]).strip()
 
+# Constants
+FLAKE8_OUTPUT = '{filename}:{line}:{char}: {code} {description}'
+HEADER_STRING = 'Found violations'
+HEADER_OUTPUT = '{header}: {filename}'
+SIMPLE_OUTPUT = '\t{code} @ {line}:{char} - {description}'
 
 # Regexes
 FLAKE8_LINE = re.compile(
@@ -143,12 +148,14 @@ class Flake8Diff(object):
         """
         Get string formatting kwargs from violation details
         """
+        get = lambda i: details.get(i, '')
         return dict(
-            line=self.color_getter('line')(details['line_number']),
-            char=self.color_getter('char')(details['char_number']),
-            code=self.color_getter('code')(details['error_code']),
-            description=self.color_getter('description')(details['description']),
-            filename=self.color_getter('filename')(details['filename']),
+            line=self.color_getter('line')(get('line_number')),
+            char=self.color_getter('char')(get('char_number')),
+            code=self.color_getter('code')(get('error_code')),
+            description=self.color_getter('description')(get('description')),
+            filename=self.color_getter('filename')(get('filename')),
+            header=self.color_getter('header')(get('header')),
         )
 
     def process(self):
@@ -174,20 +181,22 @@ class Flake8Diff(object):
                     if violation_details['line_number'] in violated_lines:
                         violations.append(violation_details)
                         if self.options.get('standard_flake8_output'):
-                            string = '{filename}:{line}:{char}: {code} {description}'
-                            print(string.format(
+                            print(FLAKE8_OUTPUT.format(
                                 **self.get_color_kwargs(violation_details)
                             ))
 
             overall_violations += len(violations)
 
             if violations and not self.options.get('standard_flake8_output'):
-                print(self.color_getter('header')('Found errors:'),
-                      self.color_getter('filename')(filename))
+                print(HEADER_OUTPUT.format(
+                    **self.get_color_kwargs(dict(
+                        filename=filename,
+                        header=HEADER_STRING
+                    ))
+                ))
 
                 for line in violations:
-                    string = '\t{code} @ {line}:{char} - {description}'
-                    print(string.format(
+                    print(SIMPLE_OUTPUT.format(
                         **self.get_color_kwargs(line)
                     ))
 
