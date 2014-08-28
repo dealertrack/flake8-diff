@@ -7,7 +7,7 @@ def _execute(cmd, logger):
     """
     Make executing a command locally a little less painful
     """
-    logging.debug("executing {}".format(cmd))
+    logger.debug("executing {}".format(cmd))
     process = subprocess.Popen(cmd,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
@@ -17,5 +17,5 @@ def _execute(cmd, logger):
     # status code when any violations have been found
     # so only log if error message is present
     if return_code != 0 and err:
-        logging.error(err)
+        logger.error(err)
     return out

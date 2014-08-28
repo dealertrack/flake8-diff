@@ -63,6 +63,13 @@ parser.add_argument(
     help='Be verbose. '
          'This will print out every compared file.',
 )
+parser.add_argument(
+    '--debug',
+    action='store_true',
+    default=False,
+    help='Be even more verbose. '
+         'This will print out all debug logs.',
+)
 default_color = os.environ.get(ENVIRON_PREFIX.format('COLOR'), 'nocolor')
 parser.add_argument(
     '--color',
@@ -87,6 +94,7 @@ def main():
         'flake8_options': args.flake8_options,
         'standard_flake8_output': args.standard_flake8_output,
         'verbose': args.verbose,
+        'debug': args.debug,
         'color_theme': args.color,
     }
 
