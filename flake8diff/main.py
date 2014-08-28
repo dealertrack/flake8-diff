@@ -125,7 +125,7 @@ class Flake8Diff(object):
         command = filter(
             None,
             [FLAKE8]
-            + self.options.get('flake8_options', '').split()
+            + (self.options.get('flake8_options', '') or '').split()
             + [filename]
         )
         return _execute(command, logger)
