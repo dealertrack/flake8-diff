@@ -122,11 +122,12 @@ class Flake8Diff(object):
         """
         Run flake8 on a file
         """
-        command = filter(None, [
-            FLAKE8,
-            self.options.get('flake8_options'),
-            filename,
-        ])
+        command = filter(
+            None,
+            [FLAKE8]
+            + self.options.get('flake8_options', '').split()
+            + [filename]
+        )
         return _execute(command, logger)
 
     def color_getter(self, component):
