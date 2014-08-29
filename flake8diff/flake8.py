@@ -101,11 +101,6 @@ class Flake8Diff(object):
         self.commits = commits
         self.options = options
 
-        if self.options.get('verbose'):
-            logger.setLevel(logging.INFO)
-        if self.options.get('debug'):
-            logger.setLevel(logging.DEBUG)
-
     def get_vcs(self):
         """
         Get appropriate VCS engine

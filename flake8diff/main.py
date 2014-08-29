@@ -1,15 +1,22 @@
 from __future__ import unicode_literals, print_function
 import argparse
+import logging
 import operator
 import os
 import six
 import sys
 
-from .flake8 import Flake8Diff, COLORS
+from .flake8 import Flake8Diff, COLORS, logger
 from .vcs import SUPPORTED_VCS
 
 
 ENVIRON_PREFIX = 'FLAKE8DIFF_{}'
+VERBOSITY_MAPPING = {
+    0: logging.ERROR,
+    1: logging.INFO,
+    2: logging.DEBUG,
+}
+
 
 parser = argparse.ArgumentParser(
     description='This script runs flake8 across a set of changed files '
@@ -58,19 +65,12 @@ parser.add_argument(
 )
 parser.add_argument(
     '-v', '--verbose',
-    action='store_true',
-    default=False,
+    action='count',
+    default=0,
     help='Be verbose. '
          'This will print out every compared file.',
 )
-parser.add_argument(
-    '--debug',
-    action='store_true',
-    default=False,
-    help='Be even more verbose. '
-         'This will print out all debug logs.',
-)
-default_color = os.environ.get(ENVIRON_PREFIX.format('COLOR'), 'nocolor')
+default_color = os.environ.get(ENVIRON_PREFIX.format('COLOR'), 'off')
 parser.add_argument(
     '--color',
     choices=COLORS.keys(),
@@ -93,10 +93,10 @@ def main():
         'vcs': args.vcs,
         'flake8_options': args.flake8_options,
         'standard_flake8_output': args.standard_flake8_output,
-        'verbose': args.verbose,
-        'debug': args.debug,
         'color_theme': args.color,
     }
+
+    logger.setLevel(VERBOSITY_MAPPING.get(args.verbose, 0))
 
     any_violations = False
     try:
