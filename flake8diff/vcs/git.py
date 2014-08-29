@@ -46,7 +46,7 @@ class GitVCS(VCSBase):
             filename
         ])
         return _execute(' '.join(cmd), self.logger).split()
-    
+
     def changed_files(self):
         """
         Return a list of all changed files.
