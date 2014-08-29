@@ -5,7 +5,7 @@ import os
 import six
 import sys
 
-from .main import Flake8Diff, COLORS
+from .flake8 import Flake8Diff, COLORS
 from .vcs import SUPPORTED_VCS
 
 
