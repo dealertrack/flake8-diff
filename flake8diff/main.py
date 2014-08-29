@@ -39,8 +39,10 @@ parser.add_argument(
 )
 parser.add_argument(
     '--flake8-options',
+    default=[],
     dest='flake8_options',
     metavar='<options>',
+    nargs=argparse.REMAINDER,
     type=six.text_type,
     help='Options to be passed to flake8 command. '
          'Can be used to configure flake8 on-the-fly when '
@@ -68,7 +70,8 @@ parser.add_argument(
     action='count',
     default=0,
     help='Be verbose. '
-         'This will print out every compared file.',
+         'This will print out every compared file. '
+         'Can be supplied multiple times to increase verbosity level',
 )
 default_color = os.environ.get(ENVIRON_PREFIX.format('COLOR'), 'off')
 parser.add_argument(
