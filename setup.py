@@ -14,7 +14,7 @@ setup(
     packages = find_packages(),
     package_data = {'flake8-diff': [ 'README.md' ] },
     zip_safe=False,
-    install_requires = ['flake8'],
+    install_requires = ['flake8', 'blessings', 'six'],
     entry_points = {
         'console_scripts': [
             'flake8-diff = flake8diff.main:main'

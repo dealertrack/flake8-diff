@@ -1,2 +1,0 @@
-blessings
-six
