@@ -8,6 +8,7 @@ def _execute(cmd, logger):
     """
     logger.debug("executing {}".format(cmd))
     process = subprocess.Popen(cmd,
+                               shell=True,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
     out, err = process.communicate()

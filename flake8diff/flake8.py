@@ -128,7 +128,7 @@ class Flake8Diff(object):
             + self.options.get('flake8_options', [])
             + [filename]
         )
-        return _execute(command, logger)
+        return _execute(' '.join(command), logger)
 
     def color_getter(self, component):
         """

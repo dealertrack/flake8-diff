@@ -38,15 +38,15 @@ class GitVCS(VCSBase):
             'difftool',
             '-y',
             '-x',
-            ' '.join(diff_command),
+            "'{}'".format(' '.join(diff_command)),
         ]
 
         cmd = filter(None, difftool_command + self.commits + [
             "--",
             filename
         ])
-        return _execute(cmd, self.logger).split()
-
+        return _execute(' '.join(cmd), self.logger).split()
+    
     def changed_files(self):
         """
         Return a list of all changed files.
@@ -58,4 +58,5 @@ class GitVCS(VCSBase):
         ] + self.commits)
 
         return filter(self.filter_file,
-                      iter(_execute(command, self.logger).splitlines()))
+                      iter(_execute(' '.join(command), self.logger)
+                           .splitlines()))
