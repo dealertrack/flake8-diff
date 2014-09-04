@@ -40,7 +40,6 @@ Documentation
    :maxdepth: 2
 
    usage
-   development-process
 
 
 API documentation
@@ -59,4 +58,5 @@ Contributing
    :maxdepth: 2
 
    contributing
+   development-process
 
