@@ -15,7 +15,7 @@ Basic usage
 ===========
 
 There are a number of basic parameters you can pass to flake8-diff, and
-explanaiton of these options is below:
+explanation of these options is below:
 
 .. code-block:: bash
 
