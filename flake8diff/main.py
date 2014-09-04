@@ -5,12 +5,12 @@ only on the lines that were changed.
 By default it's configured for "git diff master" which is useful for
 buildmasters looking at a checked out PR.
 
-To use, dump this in a file somewhere...
+To use, dump this in a file somewhere::
 
-$ pip install flake8-diff
-$ git checkout pr/NNN
-$ git merge origin/master
-$ flake8-diff
+    $ pip install flake8-diff
+    $ git checkout pr/NNN
+    $ git merge origin/master
+    $ flake8-diff
 
 """
 import subprocess
