@@ -18,12 +18,10 @@ Code
 
   * Propose all code changes via a pull request in the `GitHub repository
     <https://github.com/dealertrack/flake8-diff>`_;
-  * Use our `Development Process`_;
+  * Use our :doc:`development-process`;
   * Ensure code changes have tests and adequate coverage;
   * New features should have examples and documentation;
   * Add yourself to ``AUTHORS``.
-
-.. _Development Process: https://flake8-diff.rtfd.org/development-process.html
 
 
 Documentation
