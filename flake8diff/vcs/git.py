@@ -1,15 +1,11 @@
 from __future__ import unicode_literals, print_function
-import subprocess
 
 from ..utils import _execute
 from .base import VCSBase
 
 
 # TODO: Handle these not being found in a better way
-GIT = (subprocess.Popen(["which", "git"],
-                        stdout=subprocess.PIPE)
-       .communicate()[0]
-       .strip())
+GIT = _execute('which git', strict=True).strip()
 
 
 class GitVCS(VCSBase):

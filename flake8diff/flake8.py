@@ -1,11 +1,9 @@
 from __future__ import unicode_literals, print_function
-import logging
 import re
-import subprocess
 from blessings import Terminal
 
 from .exceptions import NotLocatableVCSError, UnsupportedVCSError
-from .utils import _execute
+from .utils import _execute, _get_logger
 from .vcs import SUPPORTED_VCS
 
 
@@ -13,17 +11,10 @@ terminal = Terminal()
 identity = lambda x: x
 
 # Setup logging
-logger = logging.getLogger(__name__)
-FORMAT = "%(asctime)-15s %(name)s %(levelname)s %(message)s"
-logging.basicConfig(format=FORMAT)
-logger.setLevel(logging.ERROR)
-
+logger = _get_logger()
 
 # TODO: Handle these not being found in a better way
-FLAKE8 = (subprocess.Popen(["which", "flake8"],
-                           stdout=subprocess.PIPE)
-          .communicate()[0]
-          .strip())
+FLAKE8 = _execute('whichs flake8', strict=True).strip()
 
 # Constants
 FLAKE8_OUTPUT = '{filename}:{line}:{char}: {code} {description}'
