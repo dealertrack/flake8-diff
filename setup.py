@@ -10,12 +10,17 @@ setup(
     author_email = "gregory.armer@dealertrack.com",
     description = ("Run flake8 across a set of changed files and filter out "
                    "violations occurring only on the lines that were changed."),
-    long_description = '\n' + open('README.md').read(),
+    long_description = '\n' + open('README.rst').read(),
     include_package_data = True,
     packages = find_packages(),
-    package_data = {'flake8-diff': [ 'README.md' ] },
+    package_data = {'flake8-diff': [ 'README.rst' ] },
     zip_safe=False,
-    install_requires = ['flake8', 'blessings', 'six'],
+    install_requires = [
+        'flake8',
+        'argparse',
+        'blessings',
+        'six',
+    ],
     entry_points = {
         'console_scripts': [
             'flake8-diff = flake8diff.main:main'

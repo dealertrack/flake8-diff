@@ -6,7 +6,10 @@ from .base import VCSBase
 
 
 # TODO: Handle these not being found in a better way
-GIT = subprocess.check_output(["which", "git"]).strip()
+GIT = (subprocess.Popen(["which", "git"],
+                        stdout=subprocess.PIPE)
+       .communicate()[0]
+       .strip())
 
 
 class GitVCS(VCSBase):
@@ -38,7 +41,7 @@ class GitVCS(VCSBase):
             'difftool',
             '-y',
             '-x',
-            "'{}'".format(' '.join(diff_command)),
+            "'{0}'".format(' '.join(diff_command)),
         ]
 
         cmd = filter(None, difftool_command + self.commits + [

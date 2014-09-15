@@ -6,7 +6,7 @@ def _execute(cmd, logger):
     """
     Make executing a command locally a little less painful
     """
-    logger.debug("executing {}".format(cmd))
+    logger.debug("executing {0}".format(cmd))
     process = subprocess.Popen(cmd,
                                shell=True,
                                stdout=subprocess.PIPE,

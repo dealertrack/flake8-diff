@@ -20,7 +20,10 @@ logger.setLevel(logging.ERROR)
 
 
 # TODO: Handle these not being found in a better way
-FLAKE8 = subprocess.check_output(["which", "flake8"]).strip()
+FLAKE8 = (subprocess.Popen(["which", "flake8"],
+                           stdout=subprocess.PIPE)
+          .communicate()[0]
+          .strip())
 
 # Constants
 FLAKE8_OUTPUT = '{filename}:{line}:{char}: {code} {description}'
@@ -148,7 +151,7 @@ class Flake8Diff(object):
         for filename in vcs.changed_files():
             violated_lines = vcs.changed_lines(filename)
 
-            logger.info("checking {} lines {}".format(
+            logger.info("checking {0} lines {1}".format(
                 filename,
                 ', '.join(violated_lines)),
             )

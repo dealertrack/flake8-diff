@@ -25,7 +25,7 @@ from .flake8 import Flake8Diff, COLORS, logger
 from .vcs import SUPPORTED_VCS
 
 
-ENVIRON_PREFIX = 'FLAKE8DIFF_{}'
+ENVIRON_PREFIX = 'FLAKE8DIFF_{0}'
 VERBOSITY_MAPPING = {
     0: logging.ERROR,
     1: logging.INFO,
@@ -68,7 +68,7 @@ parser.add_argument(
     choices=map(operator.attrgetter('name'), SUPPORTED_VCS.values()),
     type=six.text_type,
     help='VCS to use. By default VCS is attempted to '
-         'determine automatically. Can be any of "{}"'
+         'determine automatically. Can be any of "{0}"'
          ''.format(', '.join(map(operator.attrgetter('name'),
                                  SUPPORTED_VCS.values()))),
 )
@@ -94,8 +94,8 @@ parser.add_argument(
     choices=COLORS.keys(),
     default=default_color,
     type=six.text_type,
-    help='Color theme to use. Default is "{}". '
-         'Can be any of "{}"'
+    help='Color theme to use. Default is "{0}". '
+         'Can be any of "{1}"'
          ''.format(default_color,
                    ', '.join(COLORS.keys())),
 )
