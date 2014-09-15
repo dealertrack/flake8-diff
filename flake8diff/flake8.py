@@ -14,7 +14,7 @@ identity = lambda x: x
 logger = _get_logger()
 
 # TODO: Handle these not being found in a better way
-FLAKE8 = _execute('whichs flake8', strict=True).strip()
+FLAKE8 = _execute('which flake8', strict=True).strip()
 
 # Constants
 FLAKE8_OUTPUT = '{filename}:{line}:{char}: {code} {description}'
