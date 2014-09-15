@@ -1,9 +1,10 @@
 from setuptools import setup, find_packages
+import flake8diff
 
 
 setup(
     name = "flake8-diff",
-    version = '0.1.0',
+    version = flake8diff.__version__,
     url = "http://dealertrack.github.io",
     author = "Dealertrack Technologies",
     author_email = "gregory.armer@dealertrack.com",

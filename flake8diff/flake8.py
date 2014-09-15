@@ -1,18 +1,3 @@
-"""
-Run flake8 across a set of changed files and filter out violations occurring
-only on the lines that were changed.
-
-By default it's configured for "git diff master" which is useful for
-buildmasters looking at a checked out PR.
-
-To use, dump this in a file somewhere...
-
-$ pip install flake8-diff
-$ git checkout pr/NNN
-$ git merge origin/master
-$ flake8-diff
-
-"""
 from __future__ import unicode_literals, print_function
 import logging
 import re
