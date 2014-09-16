@@ -1,15 +1,30 @@
 from __future__ import unicode_literals, print_function
 import re
 
+from ..exceptions import VCSNotInstalledError
+
 
 IS_PYTHON = re.compile(r'.*[.]py$')
 
 
 class VCSBase(object):
+    name = None
+
     def __init__(self, commits, options, logger):
         self.commits = commits
         self.options = options
         self.logger = logger
+
+        try:
+            self.vcs = self.get_vcs()
+        except:
+            raise VCSNotInstalledError(self.name)
+
+    def get_vcs(self):
+        """
+        Get the binary executable of the vcs
+        """
+        raise NotImplementedError
 
     def is_used(self):
         """

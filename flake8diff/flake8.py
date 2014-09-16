@@ -2,7 +2,11 @@ from __future__ import unicode_literals, print_function
 import re
 from blessings import Terminal
 
-from .exceptions import NotLocatableVCSError, UnsupportedVCSError
+from .exceptions import (
+    Flake8NotInstalledError,
+    NotLocatableVCSError,
+    UnsupportedVCSError,
+)
 from .utils import _execute, _get_logger
 from .vcs import SUPPORTED_VCS
 
@@ -12,9 +16,6 @@ identity = lambda x: x
 
 # Setup logging
 logger = _get_logger()
-
-# TODO: Handle these not being found in a better way
-FLAKE8 = _execute('which flake8', strict=True).strip()
 
 # Constants
 FLAKE8_OUTPUT = '{filename}:{line}:{char}: {code} {description}'
@@ -80,6 +81,11 @@ class Flake8Diff(object):
         self.commits = commits
         self.options = options
 
+        try:
+            self.flake8 = _execute('which flake8', strict=True).strip()
+        except:
+            raise Flake8NotInstalledError()
+
     def get_vcs(self):
         """
         Get appropriate VCS engine
@@ -97,13 +103,13 @@ class Flake8Diff(object):
 
         raise NotLocatableVCSError
 
-    def flake8(self, filename):
+    def run_flake8(self, filename):
         """
         Run flake8 on a file
         """
         command = filter(
             None,
-            [FLAKE8]
+            [self.flake8]
             + self.options.get('flake8_options', [])
             + [filename]
         )
@@ -148,7 +154,7 @@ class Flake8Diff(object):
             )
 
             violations = []
-            for violation in self.flake8(filename).splitlines():
+            for violation in self.run_flake8(filename).splitlines():
                 matches = FLAKE8_LINE.match(violation)
                 if matches:
                     violation_details = matches.groupdict()

@@ -4,15 +4,17 @@ from ..utils import _execute
 from .base import VCSBase
 
 
-# TODO: Handle these not being found in a better way
-GIT = _execute('which git', strict=True).strip()
-
-
 class GitVCS(VCSBase):
     """
     Git support implementation
     """
     name = 'git'
+
+    def get_vcs(self):
+        """
+        Get git binary executable path
+        """
+        return _execute('which git', strict=True).strip()
 
     def is_used(self):
         """
@@ -33,7 +35,7 @@ class GitVCS(VCSBase):
             '--changed-group-format="%>"'
         ]
         difftool_command = [
-            GIT,
+            self.vcs,
             'difftool',
             '-y',
             '-x',
@@ -51,7 +53,7 @@ class GitVCS(VCSBase):
         Return a list of all changed files.
         """
         command = filter(None, [
-            GIT,
+            self.vcs,
             "diff",
             "--name-only",
         ] + self.commits)
