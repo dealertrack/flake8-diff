@@ -53,6 +53,14 @@ COLORS = {
         char=identity,
         description=identity,
     ),
+    'colorful': dict(
+        header=terminal.bold,
+        filename=identity,
+        code=terminal.bold_red,
+        line=terminal.magenta,
+        char=terminal.magenta,
+        description=terminal.cyan,
+    ),
     'dark': dict(
         header=terminal.bold,
         filename=identity,
@@ -70,6 +78,7 @@ COLORS = {
         description=terminal.blue,
     ),
 }
+COLORS['boring'] = COLORS['off'].copy()
 
 
 class Flake8Diff(object):

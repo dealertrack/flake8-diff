@@ -92,7 +92,7 @@ parser.add_argument(
          'This will print out every compared file. '
          'Can be supplied multiple times to increase verbosity level',
 )
-default_color = os.environ.get(ENVIRON_PREFIX.format('COLOR'), 'off')
+default_color = os.environ.get(ENVIRON_PREFIX.format('COLOR'), 'colorful')
 parser.add_argument(
     '--color',
     choices=COLORS.keys(),
