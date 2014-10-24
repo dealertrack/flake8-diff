@@ -1,7 +1,11 @@
 from __future__ import unicode_literals, print_function
 
+import logging
 from ..utils import _execute
 from .base import VCSBase
+
+
+logger = logging.getLogger(__name__)
 
 
 class GitVCS(VCSBase):
@@ -46,7 +50,7 @@ class GitVCS(VCSBase):
             "--",
             filename
         ])
-        return _execute(' '.join(cmd), self.logger).split()
+        return _execute(' '.join(cmd)).split()
 
     def changed_files(self):
         """
@@ -59,5 +63,5 @@ class GitVCS(VCSBase):
         ] + self.commits)
 
         return filter(self.filter_file,
-                      iter(_execute(' '.join(command), self.logger)
+                      iter(_execute(' '.join(command))
                            .splitlines()))

@@ -3,28 +3,13 @@ import logging
 import subprocess
 
 
-def _get_logger(level=None):
-    """
-    Get logger with specified level
-    """
-    if level is None:
-        level = logging.ERROR
-
-    logger = logging.getLogger('flake8diff')
-    FORMAT = "%(asctime)-15s %(name)s %(levelname)s %(message)s"
-    logging.basicConfig(format=FORMAT)
-    logger.setLevel(level)
-
-    return logger
+logger = logging.getLogger(__name__)
 
 
-def _execute(cmd, logger=None, strict=False):
+def _execute(cmd, strict=False):
     """
     Make executing a command locally a little less painful
     """
-    if logger is None:
-        logger = _get_logger()
-
     logger.debug("executing {0}".format(cmd))
     process = subprocess.Popen(cmd,
                                shell=True,

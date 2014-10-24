@@ -10,10 +10,9 @@ IS_PYTHON = re.compile(r'.*[.]py$')
 class VCSBase(object):
     name = None
 
-    def __init__(self, commits, options, logger):
+    def __init__(self, commits, options):
         self.commits = commits
         self.options = options
-        self.logger = logger
 
         try:
             self.vcs = self.get_vcs()

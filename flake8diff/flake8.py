@@ -1,4 +1,5 @@
 from __future__ import unicode_literals, print_function
+import logging
 import re
 from blessings import Terminal
 
@@ -7,15 +8,14 @@ from .exceptions import (
     NotLocatableVCSError,
     UnsupportedVCSError,
 )
-from .utils import _execute, _get_logger
+from .utils import _execute
 from .vcs import SUPPORTED_VCS
 
 
 terminal = Terminal()
 identity = lambda x: x
 
-# Setup logging
-logger = _get_logger()
+logger = logging.getLogger(__name__)
 
 # Constants
 FLAKE8_OUTPUT = '{filename}:{line}:{char}: {code} {description}'
@@ -94,10 +94,10 @@ class Flake8Diff(object):
             vcs = self.options.get('vcs')
             if vcs not in SUPPORTED_VCS:
                 raise UnsupportedVCSError(vcs)
-            return SUPPORTED_VCS.get(vcs)(self.commits, self.options, logger)
+            return SUPPORTED_VCS.get(vcs)(self.commits, self.options)
 
         for vcs in SUPPORTED_VCS.values():
-            vcs = vcs(self.commits, self.options, logger)
+            vcs = vcs(self.commits, self.options)
             if vcs.is_used():
                 return vcs
 
@@ -113,7 +113,7 @@ class Flake8Diff(object):
             + self.options.get('flake8_options', [])
             + [filename]
         )
-        return _execute(' '.join(command), logger)
+        return _execute(' '.join(command))
 
     def color_getter(self, component):
         """

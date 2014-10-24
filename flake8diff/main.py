@@ -21,16 +21,20 @@ import os
 import six
 import sys
 
-from .flake8 import Flake8Diff, COLORS, logger
+from .flake8 import COLORS, Flake8Diff
 from .vcs import SUPPORTED_VCS
 
 
+LOGGING_FORMAT = '%(asctime)-15s %(name)s %(levelname)s %(message)s'
 ENVIRON_PREFIX = 'FLAKE8DIFF_{0}'
 VERBOSITY_MAPPING = {
     0: logging.ERROR,
     1: logging.INFO,
     2: logging.DEBUG,
 }
+
+
+logging.basicConfig(format=LOGGING_FORMAT)
 
 
 parser = argparse.ArgumentParser(
@@ -114,7 +118,9 @@ def main():
         'color_theme': args.color,
     }
 
-    logger.setLevel(VERBOSITY_MAPPING.get(args.verbose, 0))
+    # adjust logging level
+    (logging.getLogger('')
+     .setLevel(VERBOSITY_MAPPING.get(args.verbose, 0)))
 
     any_violations = False
     try:
