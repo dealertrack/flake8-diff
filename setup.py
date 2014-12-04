@@ -11,6 +11,7 @@ setup(
     description = ("Run flake8 across a set of changed files and filter out "
                    "violations occurring only on the lines that were changed."),
     long_description = '\n' + open('README.rst').read(),
+    download_url = 'https://github.com/dealertrack/flake8-diff/releases/tag/v' + flake8diff.__version__,
     include_package_data = True,
     packages = find_packages(),
     package_data = {'flake8-diff': [ 'README.rst' ] },
