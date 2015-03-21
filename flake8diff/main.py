@@ -129,7 +129,7 @@ def main():
             options=options,
         ).process()
     except Exception as e:
-        parser.error(e.message or six.text_type(e))
+        parser.error(six.text_type(e))
 
     if any_violations:
         sys.exit(1)
