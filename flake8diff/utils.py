@@ -26,4 +26,4 @@ def _execute(cmd, strict=False):
         if strict:
             raise subprocess.CalledProcessError(return_code, cmd)
 
-    return out
+    return out.decode('utf-8')
