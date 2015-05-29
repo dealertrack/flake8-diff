@@ -80,6 +80,11 @@ COLORS = {
 }
 COLORS['boring'] = COLORS['off'].copy()
 
+STRICT_MODES = {
+    'only_lines': 'only_lines',
+    'file': 'file',
+}
+
 
 class Flake8Diff(object):
     """
@@ -147,6 +152,22 @@ class Flake8Diff(object):
             header=self.color_getter('header')(get('header')),
         )
 
+    def should_include_violation(self, violation, changed_lines):
+        """
+        Check if given violation should be included.
+
+        This method accounts for strictness modes.
+        """
+        strict_mode = self.options.get('strict_mode', 'only_lines')
+        if strict_mode == 'only_lines':
+            return violation['line_number'] in changed_lines
+        elif strict_mode == 'file':
+            return True
+        else:
+            msg = 'Strict mode {} is not supportec'.format(strict_mode)
+            logger.error(msg)
+            raise NotImplementedError(msg)
+
     def process(self):
         """
         Perform the magic
@@ -155,11 +176,11 @@ class Flake8Diff(object):
         vcs = self.get_vcs()
 
         for filename in vcs.changed_files():
-            violated_lines = vcs.changed_lines(filename)
+            changed_lines = vcs.changed_lines(filename)
 
             logger.info("checking {0} lines {1}".format(
                 filename,
-                ', '.join(violated_lines)),
+                ', '.join(changed_lines)),
             )
 
             violations = []
@@ -167,7 +188,8 @@ class Flake8Diff(object):
                 matches = FLAKE8_LINE.match(violation)
                 if matches:
                     violation_details = matches.groupdict()
-                    if violation_details['line_number'] in violated_lines:
+                    if self.should_include_violation(violation_details,
+                                                     changed_lines):
                         violations.append(violation_details)
                         if self.options.get('standard_flake8_output'):
                             print(FLAKE8_OUTPUT.format(

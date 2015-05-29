@@ -21,7 +21,7 @@ import os
 import six
 import sys
 
-from .flake8 import COLORS, Flake8Diff
+from .flake8 import COLORS, STRICT_MODES, Flake8Diff
 from .vcs import SUPPORTED_VCS
 
 
@@ -103,6 +103,17 @@ parser.add_argument(
          ''.format(default_color,
                    ', '.join(COLORS.keys())),
 )
+parser.add_argument(
+    '--strict-mode',
+    choices=STRICT_MODES.keys(),
+    default='only_lines',
+    type=six.text_type,
+    dest='strict_mode',
+    help='Strict mode to use on the files where violations are found. '
+         'Default is "only_lines". '
+         'Can be any of "{0}"'
+         ''.format(', '.join(STRICT_MODES.keys())),
+)
 
 
 def main():
@@ -116,6 +127,7 @@ def main():
         'flake8_options': args.flake8_options,
         'standard_flake8_output': args.standard_flake8_output,
         'color_theme': args.color,
+        'strict_mode': args.strict_mode,
     }
 
     # adjust logging level
