@@ -49,3 +49,9 @@ class VCSBase(object):
         Return a list of all changed files.
         """
         raise NotImplementedError
+
+    def check(self):
+        """
+        Returns True if the configuration is correct or raises the exception
+        """
+        return True
