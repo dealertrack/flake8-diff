@@ -6,7 +6,7 @@ import subprocess
 logger = logging.getLogger(__name__)
 
 
-def _execute(cmd, strict=False):
+def _execute(cmd, strict=False, log_errors=True):
     """
     Make executing a command locally a little less painful
     """
@@ -22,7 +22,8 @@ def _execute(cmd, strict=False):
     # status code when any violations have been found
     # so only log if error message is present
     if return_code != 0 and (err or strict):
-        logger.error(err)
+        if log_errors:
+            logger.error(err)
         if strict:
             raise subprocess.CalledProcessError(return_code, cmd)
 
