@@ -32,6 +32,22 @@ class HgVCS(VCSBase):
         """
         return True
 
+    def changed_lines(self, filename):
+        """
+        Get a list of all lines changed by this set of commits.
+        """
+        commits = ['-r {}'.format(c) for c in self.commits]
+        command_arguments = [
+            '-p diff',
+            '-o --new-line-format="%dn "',
+            '-o --unchanged-line-format=""',
+            '-o --changed-group-format="%\>"',
+            filename
+        ]
+        command = [self.vcs, 'extdiff'] + commits + command_arguments
+        result = _execute(' '.join(command))
+        return result.strip().split()
+
     def changed_files(self):
         """
         Return a list of all changed files.
