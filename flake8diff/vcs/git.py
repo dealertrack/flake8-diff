@@ -1,6 +1,8 @@
 from __future__ import unicode_literals, print_function
 
 import logging
+import subprocess
+
 from ..utils import _execute
 from .base import VCSBase
 
@@ -23,9 +25,11 @@ class GitVCS(VCSBase):
     def is_used(self):
         """
         Determines if this VCS should be used
-
-        TODO: implement
         """
+        try:
+            self._is_git_repository()
+        except subprocess.CalledProcessError:
+            return False
         return True
 
     def changed_lines(self, filename):
@@ -65,3 +69,7 @@ class GitVCS(VCSBase):
         return filter(self.filter_file,
                       iter(_execute(' '.join(command))
                            .splitlines()))
+
+    def _is_git_repository(self):
+        return _execute(
+            '{vcs} status'.format(vcs=self.vcs), strict=True, log_errors=False)
