@@ -38,16 +38,21 @@ class HgVCS(VCSBase):
         Get a list of all lines changed by this set of commits.
         """
         commits = ['-r {}'.format(c) for c in self.commits]
+
         command_arguments = [
-            '-p diff',
-            '-o --new-line-format="%dn "',
-            '-o --unchanged-line-format=""',
-            '-o --changed-group-format="%\>"',
+            "--program=diff",
+            "'--option=--new-line-format=\"%dn \"'",
+            "'--option=--unchanged-line-format=\"\"'",
+            "'--option=--changed-group-format=\"%>\"'",
             filename
         ]
         command = [self.vcs, 'extdiff'] + commits + command_arguments
         result = _execute(' '.join(command))
-        return result.strip().split()
+
+        # Fixes few compatibility issues
+        result = result.replace('"', '').strip().split(' ')
+
+        return result
 
     def changed_files(self):
         """
