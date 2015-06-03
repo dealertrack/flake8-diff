@@ -32,6 +32,20 @@ class HgVCS(VCSBase):
         """
         return True
 
+    def changed_files(self):
+        """
+        Return a list of all changed files.
+        """
+        commits = ['-r {}'.format(c) for c in self.commits]
+        command = [self.vcs, 'diff', '--stat'] + commits
+        result = _execute(' '.join(command))
+        lines = result.strip().split('\n')[:-1]
+        files = [
+            line.split('|')[0].strip()
+            for line in lines
+        ]
+        return files
+
     def _check_extdiff_extension(self, vcs):
         try:
             return _execute('{vcs} extdiff'.format(vcs=vcs), strict=True)
