@@ -3,6 +3,7 @@ import inspect
 
 from .base import VCSBase
 from .git import GitVCS  # noqa
+from .hg import HgVCS  # noqa
 
 
 SUPPORTED_VCS = dict(
