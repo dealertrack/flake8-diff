@@ -21,15 +21,16 @@ class HgVCS(VCSBase):
         Get git binary executable path
         """
         vcs = _execute('which hg', strict=True).strip()
-        self._check_extdiff_extension(vcs)
         return vcs
 
     def is_used(self):
         """
         Determines if this VCS should be used
-
-        TODO: implement
         """
+        try:
+            self._check_mercurial_repository()
+        except subprocess.CalledProcessError:
+            return False
         return True
 
     def changed_lines(self, filename):
@@ -62,9 +63,11 @@ class HgVCS(VCSBase):
         ]
         return files
 
-    def _check_extdiff_extension(self, vcs):
+    def check(self):
         try:
-            return _execute('{vcs} extdiff'.format(vcs=vcs), strict=True)
+            _execute(
+                '{vcs} extdiff'.format(vcs=self.vcs), strict=True,
+                log_errors=False)
         except subprocess.CalledProcessError:
             message = (
                 "Mercurial 'extdiff' extension is disabled.\n"
@@ -73,3 +76,8 @@ class HgVCS(VCSBase):
                 "extdiff = \n")
             print(message)
             raise Exception("Please enable 'extdiff' extension")
+        return True
+
+    def _check_mercurial_repository(self):
+        return _execute(
+            '{vcs} status'.format(vcs=self.vcs), strict=True, log_errors=False)
