@@ -66,7 +66,7 @@ class HgVCS(VCSBase):
             line.split('|')[0].strip()
             for line in lines
         ]
-        return files
+        return filter(self.filter_file, files)
 
     def check(self):
         try:
