@@ -100,6 +100,12 @@ class Flake8Diff(object):
         except:
             raise Flake8NotInstalledError()
 
+        self._should_include_violation = getattr(
+            self,
+            '_should_include_violation_{}'
+            ''.format(self.options.get('strict_mode', 'only_lines'))
+        )
+
     def get_vcs(self):
         """
         Get appropriate VCS engine
@@ -152,21 +158,27 @@ class Flake8Diff(object):
             header=self.color_getter('header')(get('header')),
         )
 
-    def should_include_violation(self, violation, changed_lines):
+    def _should_include_violation_only_lines(self, violation, changed_lines):
         """
         Check if given violation should be included.
 
-        This method accounts for strictness modes.
+        Since this implements "only_lines" strict mode, this
+        only includes the violation if it was introduced in the
+        modified files as per VCS diff.
         """
-        strict_mode = self.options.get('strict_mode', 'only_lines')
-        if strict_mode == 'only_lines':
-            return violation['line_number'] in changed_lines
-        elif strict_mode == 'file':
-            return True
-        else:
-            msg = 'Strict mode {} is not supportec'.format(strict_mode)
-            logger.error(msg)
-            raise NotImplementedError(msg)
+        return violation['line_number'] in changed_lines
+
+    def _should_include_violation_file(self, violation, changed_lines):
+        """
+        Check if given violation should be included.
+
+        Since this implements "file" strict mode, this always
+        includes all violations in the report.
+        """
+        return True
+
+    def _should_include_violation(self, violation, changed_lines):
+        raise NotImplementedError('This method should be replaced in __init__')
 
     def process(self):
         """
