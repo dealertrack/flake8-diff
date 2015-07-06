@@ -80,6 +80,11 @@ COLORS = {
 }
 COLORS['boring'] = COLORS['off'].copy()
 
+STRICT_MODES = {
+    'only_lines': 'only_lines',
+    'file': 'file',
+}
+
 
 class Flake8Diff(object):
     """
@@ -94,6 +99,12 @@ class Flake8Diff(object):
             self.flake8 = _execute('which flake8', strict=True).strip()
         except:
             raise Flake8NotInstalledError()
+
+        self._should_include_violation = getattr(
+            self,
+            '_should_include_violation_{}'
+            ''.format(self.options.get('strict_mode', 'only_lines'))
+        )
 
     def get_vcs(self):
         """
@@ -147,6 +158,28 @@ class Flake8Diff(object):
             header=self.color_getter('header')(get('header')),
         )
 
+    def _should_include_violation_only_lines(self, violation, changed_lines):
+        """
+        Check if given violation should be included.
+
+        Since this implements "only_lines" strict mode, this
+        only includes the violation if it was introduced in the
+        modified files as per VCS diff.
+        """
+        return violation['line_number'] in changed_lines
+
+    def _should_include_violation_file(self, violation, changed_lines):
+        """
+        Check if given violation should be included.
+
+        Since this implements "file" strict mode, this always
+        includes all violations in the report.
+        """
+        return True
+
+    def _should_include_violation(self, violation, changed_lines):
+        raise NotImplementedError('This method should be replaced in __init__')
+
     def process(self):
         """
         Perform the magic
@@ -155,11 +188,11 @@ class Flake8Diff(object):
         vcs = self.get_vcs()
 
         for filename in vcs.changed_files():
-            violated_lines = vcs.changed_lines(filename)
+            changed_lines = vcs.changed_lines(filename)
 
             logger.info("checking {0} lines {1}".format(
                 filename,
-                ', '.join(violated_lines)),
+                ', '.join(changed_lines)),
             )
 
             violations = []
@@ -167,7 +200,8 @@ class Flake8Diff(object):
                 matches = FLAKE8_LINE.match(violation)
                 if matches:
                     violation_details = matches.groupdict()
-                    if violation_details['line_number'] in violated_lines:
+                    if self._should_include_violation(violation_details,
+                                                      changed_lines):
                         violations.append(violation_details)
                         if self.options.get('standard_flake8_output'):
                             print(FLAKE8_OUTPUT.format(
