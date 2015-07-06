@@ -200,8 +200,8 @@ class Flake8Diff(object):
                 matches = FLAKE8_LINE.match(violation)
                 if matches:
                     violation_details = matches.groupdict()
-                    if self.should_include_violation(violation_details,
-                                                     changed_lines):
+                    if self._should_include_violation(violation_details,
+                                                      changed_lines):
                         violations.append(violation_details)
                         if self.options.get('standard_flake8_output'):
                             print(FLAKE8_OUTPUT.format(
