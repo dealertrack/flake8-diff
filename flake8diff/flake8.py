@@ -7,6 +7,7 @@ from .exceptions import (
     Flake8NotInstalledError,
     NotLocatableVCSError,
     UnsupportedVCSError,
+    WrongVCSSpecified,
 )
 from .utils import _execute
 from .vcs import SUPPORTED_VCS
@@ -114,11 +115,17 @@ class Flake8Diff(object):
             vcs = self.options.get('vcs')
             if vcs not in SUPPORTED_VCS:
                 raise UnsupportedVCSError(vcs)
-            return SUPPORTED_VCS.get(vcs)(self.commits, self.options)
+            supported_vcs = SUPPORTED_VCS.get(vcs)
+            if supported_vcs:
+                supported_vcs = supported_vcs(self.commits, self.options)
+                if supported_vcs.is_used() and supported_vcs.check():
+                    return supported_vcs
+                else:
+                    raise WrongVCSSpecified(vcs)
 
         for vcs in SUPPORTED_VCS.values():
             vcs = vcs(self.commits, self.options)
-            if vcs.is_used():
+            if vcs.is_used() and vcs.check():
                 return vcs
 
         raise NotLocatableVCSError

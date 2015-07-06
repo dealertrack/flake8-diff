@@ -40,6 +40,7 @@ Documentation
    :maxdepth: 2
 
    usage
+   mercurial
 
 
 API documentation

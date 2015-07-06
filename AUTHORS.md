@@ -7,3 +7,4 @@
 ### Contributors
 
 * Miroslav Shubernetskiy - miroslav.shubernetskiy@dealertrack.com
+* RhodeCode GmbH (develop@rhodecode.com)
