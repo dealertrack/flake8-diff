@@ -28,7 +28,7 @@ class HgVCS(VCSBase):
         Determines if this VCS should be used
         """
         try:
-            self._check_mercurial_repository()
+            self._is_mercurial_repository()
         except subprocess.CalledProcessError:
             return False
         return True
@@ -83,6 +83,6 @@ class HgVCS(VCSBase):
             raise Exception("Please enable 'extdiff' extension")
         return True
 
-    def _check_mercurial_repository(self):
+    def _is_mercurial_repository(self):
         return _execute(
             '{vcs} status'.format(vcs=self.vcs), strict=True, log_errors=False)
