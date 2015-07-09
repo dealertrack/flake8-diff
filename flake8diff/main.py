@@ -69,7 +69,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '--vcs',
-    choices=map(operator.attrgetter('name'), SUPPORTED_VCS.values()),
+    choices=list(map(operator.attrgetter('name'), SUPPORTED_VCS.values())),
     type=six.text_type,
     help='VCS to use. By default VCS is attempted to '
          'determine automatically. Can be any of "{0}"'
