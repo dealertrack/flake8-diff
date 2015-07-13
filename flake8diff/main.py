@@ -13,7 +13,8 @@ To use, dump this in a file somewhere::
     $ flake8-diff
 
 """
-from __future__ import unicode_literals, print_function
+from __future__ import print_function, unicode_literals
+
 import argparse
 import logging
 import operator
@@ -23,7 +24,6 @@ import sys
 
 from .flake8 import COLORS, STRICT_MODES, Flake8Diff
 from .vcs import SUPPORTED_VCS
-
 
 LOGGING_FORMAT = '%(asctime)-15s %(name)s %(levelname)s %(message)s'
 ENVIRON_PREFIX = 'FLAKE8DIFF_{0}'
