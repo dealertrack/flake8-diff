@@ -104,7 +104,7 @@ class Flake8Diff(object):
 
         self._should_include_violation = getattr(
             self,
-            '_should_include_violation_{}'
+            '_should_include_violation_{0}'
             ''.format(self.options.get('strict_mode', 'only_lines'))
         )
 
@@ -129,7 +129,7 @@ class Flake8Diff(object):
             try:
                 vcs = vcs(self.commits, self.options)
             except VCSNotInstalledError:
-                logger.error('Seems like {} is not installed'.format(vcs.name))
+                logger.error('Seems like {0} is not installed'.format(vcs.name))
             else:
                 if vcs.is_used() and vcs.check():
                     return vcs
@@ -232,8 +232,6 @@ class Flake8Diff(object):
                 ))
 
                 for line in violations:
-                    print(SIMPLE_OUTPUT.format(
-                        **self.get_color_kwargs(line)
-                    ))
+                    print(SIMPLE_OUTPUT.format(**self.get_color_kwargs(line)))
 
         return overall_violations == 0

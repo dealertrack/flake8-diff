@@ -30,7 +30,7 @@ class UnsupportedVCSError(BaseError):
     """
 
     def __init__(self, vcs=None):
-        msg = '{0} VCS is not unsupported'
+        msg = '{0} VCS is not supported'
         self.message = msg.format(vcs)
         super(UnsupportedVCSError, self).__init__()
 
