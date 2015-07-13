@@ -13,5 +13,4 @@ class UtilsTestCase(TestCase):
 
     def test_execute_failure(self):
         with self.assertRaises(CalledProcessError):
-            error = utils._execute("doesnotexist", strict=True)
-            self.assertEquals(error, "")
+            utils._execute("doesnotexist", strict=True)

@@ -232,8 +232,6 @@ class Flake8Diff(object):
                 ))
 
                 for line in violations:
-                    print(SIMPLE_OUTPUT.format(
-                        **self.get_color_kwargs(line)
-                    ))
+                    print(SIMPLE_OUTPUT.format(**self.get_color_kwargs(line)))
 
         return overall_violations == 0
