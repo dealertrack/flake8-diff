@@ -6,5 +6,9 @@ python:
   - "3.3"
   - "3.4"
   - "pypy"
+sudo: false
 install: pip install -r requirements.txt
-script: nosetests
+script:
+  - py.test -v --cov flake8diff --cov-report term-missing
+after_success:
+  - coveralls
