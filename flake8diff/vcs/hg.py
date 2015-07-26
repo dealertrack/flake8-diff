@@ -20,7 +20,7 @@ class HgVCS(VCSBase):
         """
         Get git binary executable path
         """
-        vcs = _execute('which hg', strict=True).strip()
+        vcs = _execute('which hg', strict=True, log_errors=False).strip()
         return vcs
 
     def is_used(self):
