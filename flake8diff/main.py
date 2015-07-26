@@ -39,9 +39,7 @@ logging.basicConfig(format=LOGGING_FORMAT)
 
 
 parser = argparse.ArgumentParser(
-    description='This script runs flake8 across a set of changed files '
-                'and filters out violations occurring only on the lines '
-                'that were changed.',
+    description=__description__,
 )
 
 parser.add_argument(
