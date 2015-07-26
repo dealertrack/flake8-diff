@@ -2,6 +2,11 @@ from setuptools import setup, find_packages
 import flake8diff
 
 
+def read(path):
+    with open(path, 'rb') as fid:
+        return fid.read().decode('utf-8')
+
+
 setup(
     name="flake8-diff",
     version=flake8diff.__version__,
@@ -9,7 +14,7 @@ setup(
     author="Dealertrack Technologies",
     author_email="gregory.armer@dealertrack.com",
     description=flake8diff.__description__,
-    long_description='\n' + open('README.rst').decode('utf-8').read(),
+    long_description='\n' + read('README.rst'),
     download_url=(
         'https://github.com/dealertrack/flake8-diff/releases/tag/v'
         + flake8diff.__version__

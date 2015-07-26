@@ -22,6 +22,7 @@ import os
 import six
 import sys
 
+from . import __description__, __version__
 from .flake8 import COLORS, STRICT_MODES, Flake8Diff
 from .vcs import SUPPORTED_VCS
 
@@ -114,10 +115,33 @@ parser.add_argument(
          'Can be any of "{0}"'
          ''.format(', '.join(STRICT_MODES.keys())),
 )
+parser.add_argument(
+    '--version',
+    action='store_true',
+    default=False,
+    help='Show the version number of flake8-diff'
+)
+
+
+def version():
+    msg = (
+        'flake8-diff\n'
+        '===========\n'
+        '{}\n\n'
+        'version: {}\n'
+        'python: {}\n'
+        'source: https://github.com/dealertrack/flake8-diff'
+    )
+    print(msg.format(__description__, __version__, sys.executable))
+    sys.exit(0)
 
 
 def main():
     args = parser.parse_args()
+
+    if args.version:
+        return version()
+
     if len(args.commit) > 2:
         parser.error('At most 2 commits can be provided.')
 
