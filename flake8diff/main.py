@@ -19,6 +19,7 @@ import argparse
 import logging
 import operator
 import os
+import platform
 import six
 import sys
 
@@ -123,14 +124,12 @@ parser.add_argument(
 
 def version():
     msg = (
-        'flake8-diff\n'
-        '===========\n'
-        '{}\n\n'
         'version: {}\n'
         'python: {}\n'
+        'system: {}\n'
         'source: https://github.com/dealertrack/flake8-diff'
     )
-    print(msg.format(__description__, __version__, sys.executable))
+    print(msg.format(__version__, sys.executable, platform.system()))
     sys.exit(0)
 
 
