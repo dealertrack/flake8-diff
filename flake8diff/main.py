@@ -19,9 +19,11 @@ import argparse
 import logging
 import operator
 import os
+import platform
 import six
 import sys
 
+from . import __description__, __version__
 from .flake8 import COLORS, STRICT_MODES, Flake8Diff
 from .vcs import SUPPORTED_VCS
 
@@ -38,9 +40,7 @@ logging.basicConfig(format=LOGGING_FORMAT)
 
 
 parser = argparse.ArgumentParser(
-    description='This script runs flake8 across a set of changed files '
-                'and filters out violations occurring only on the lines '
-                'that were changed.',
+    description=__description__,
 )
 
 parser.add_argument(
@@ -114,10 +114,31 @@ parser.add_argument(
          'Can be any of "{0}"'
          ''.format(', '.join(STRICT_MODES.keys())),
 )
+parser.add_argument(
+    '--version',
+    action='store_true',
+    default=False,
+    help='Show the version number of flake8-diff'
+)
+
+
+def version():
+    msg = (
+        'version: {}\n'
+        'python: {}\n'
+        'system: {}\n'
+        'source: https://github.com/dealertrack/flake8-diff'
+    )
+    print(msg.format(__version__, sys.executable, platform.system()))
+    sys.exit(0)
 
 
 def main():
     args = parser.parse_args()
+
+    if args.version:
+        return version()
+
     if len(args.commit) > 2:
         parser.error('At most 2 commits can be provided.')
 

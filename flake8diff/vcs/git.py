@@ -20,7 +20,7 @@ class GitVCS(VCSBase):
         """
         Get git binary executable path
         """
-        return _execute('which git', strict=True).strip()
+        return _execute('which git', strict=True, log_errors=False).strip()
 
     def is_used(self):
         """
@@ -64,6 +64,7 @@ class GitVCS(VCSBase):
             self.vcs,
             "diff",
             "--name-only",
+            "--diff-filter=ACMRTUXB",
         ] + self.commits)
 
         return filter(self.filter_file,

@@ -129,7 +129,7 @@ class Flake8Diff(object):
             try:
                 vcs = vcs(self.commits, self.options)
             except VCSNotInstalledError:
-                logger.error('Seems like {0} is not installed'.format(vcs.name))
+                logger.info('Seems like {0} is not installed'.format(vcs.name))
             else:
                 if vcs.is_used() and vcs.check():
                     return vcs
